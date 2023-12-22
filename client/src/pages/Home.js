@@ -9,16 +9,13 @@ const Home = () => {
 
     useEffect(() => {
         const queryParams = new URLSearchParams(location.search);
-        const registrationStatus = queryParams.get('registration');
+        const registrationStatus = queryParams.get('registration') || null;
 
         const tokens = localStorage.getItem('token');
-        if ((!registrationStatus === 'success') && (!tokens || tokens === null)) {
+        if (registrationStatus === null && (!tokens || tokens === null)) {
             // If not a new user and not logged in, redirect to the login page
             onClickLogout();
         }
-
-        const { pathname } = location;
-        router(pathname, { replace: true });
     }, []);
 
     // Logout functionality
