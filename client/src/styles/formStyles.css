@@ -1,0 +1,122 @@
+body {
+    background: #263e80;
+    background: -webkit-linear-gradient(to right, #24243e, #302b63, #263e80);
+    background: linear-gradient(to right, #24243e, #302b63, #263e80);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+  }
+  
+  .input-container {
+    display: flex;
+    max-width: 600px;
+    width: 100%;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: white;
+  }
+  
+  .input-fields {
+    flex: 1;
+    padding-right: 48px;
+  }
+  
+  .input-image {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+  }
+  
+  form {
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  label {
+    display: block;
+  }
+  
+  input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 16px;
+  }
+  
+  button {
+    width: 100%;
+    padding: 10px;
+    background-color: #263e80;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    min-width: 320px;
+    margin-top: 8px;
+  }
+  
+  button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  .error-message {
+    color: #ff0000;
+    margin-top: 10px;
+  }
+  
+  .redirectButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+  }
+  
+  .redirectButton p {
+    margin-left: 5px;
+    color: #263e80;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  
+  /* Media query for responsiveness */
+  @media (max-width: 768px) {
+    .input-container {
+      padding: 10px;
+      flex-direction: column;
+    }
+  
+    form {
+        max-width: 245px;
+    }
+
+    button {
+        min-width: 265px;
+    }
+
+    .input-fields,
+    .input-image {
+      flex: none;
+      width: 100%;
+    }
+  
+    .input-fields {
+      padding-right: 0;
+    }
+  }
+  
+  @media (min-width: 769px) {
+    .input-container {
+      min-width: 600px;
+    }
+  }
