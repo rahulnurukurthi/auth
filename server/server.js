@@ -1,3 +1,4 @@
+// Import required modules and packages
 const express = require('express');
 const { graphqlHTTP } = require('express-graphql');
 const mongoose = require('mongoose');
@@ -7,11 +8,14 @@ const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const { GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLNonNull } = require('graphql');
 
+// Create an Express application
 const app = express();
 app.use(cors());
 
+// Connect to MongoDB database
 mongoose.connect('mongodb://localhost:27017/Global-Voices-Schema', { useNewUrlParser: true, useUnifiedTopology: true });
 
+// Define GraphQL User Type
 const UserType = new GraphQLObjectType({
   name: 'User',
   fields: () => ({
@@ -20,9 +24,11 @@ const UserType = new GraphQLObjectType({
   }),
 });
 
-const RootQuery = new GraphQLObjectType({
-  name: 'RootQueryType',
+// GraphQL Query
+const AuthenticationQuery = new GraphQLObjectType({
+  name: 'AuthenticationQueryType',
   fields: {
+    // GraphQL query to find a user by ID
     user: {
       type: UserType,
       args: { id: { type: GraphQLString } },
@@ -31,9 +37,11 @@ const RootQuery = new GraphQLObjectType({
   },
 });
 
+// GraphQL Mutation for user registration and login
 const mutation = new GraphQLObjectType({
   name: 'Mutation',
   fields: {
+    // GraphQL mutation for user registration
     registerUser: {
       type: UserType,
       args: {
@@ -42,15 +50,18 @@ const mutation = new GraphQLObjectType({
       },
       resolve: async (parent, args) => {
         try {
+          // Hash the user's password before saving to the database
           const hashedPassword = await bcrypt.hash(args.password, 10);
           const user = new User({ email: args.email, password: hashedPassword });
           return user.save();
         } catch (error) {
+          // Handle registration error and throw a custom error message
           console.error('Error during user registration:', error);
           throw new Error('Registration failed');
         }
       },
     },
+    // GraphQL mutation for user login
     loginUser: {
         type: GraphQLString,
         args: {
@@ -59,19 +70,21 @@ const mutation = new GraphQLObjectType({
         },
         resolve: async (parent, args) => {
             try {
+                // Find the user by email in the database
                 const user = await User.findOne({ email: args.email });
       
+                // If the user is not found, throw an error
                 if (!user) {
                   console.error('User not found');
                   throw new Error('User not found');
                 }
       
+                // Compare the provided password with the hashed password in the database
                 const passwordMatch = await bcrypt.compare(args.password, user.password);
       
+                // If the password does not match, increment login attempts and lock the account if needed
                 if (!passwordMatch) {
                     console.error('Invalid password');
-                  
-                    // Increment login attempts and lock the account if needed
                     user.loginAttempts += 1;
                     if (user.loginAttempts >= 5) {
                       console.error('Account locked due to multiple failed login attempts');
@@ -86,10 +99,12 @@ const mutation = new GraphQLObjectType({
                 user.loginAttempts = 0;
                 await user.save();
       
+                // Generate a JWT token for successful login
                 const token = jwt.sign({ userId: user.id, email: user.email }, 'secret', { expiresIn: '1h' });
                 console.log('Login successful. Token:', token);
                 return token;
               } catch (error) {
+                // Handle login error and throw a custom error message
                 console.error('Error during user login:', error);
                 throw new Error(error);
               }      
@@ -98,11 +113,13 @@ const mutation = new GraphQLObjectType({
     },
 });
 
+// Create a GraphQL schema with defined AuthenticationQuery and Mutation
 const schema = new GraphQLSchema({
-  query: RootQuery,
+  query: AuthenticationQuery,
   mutation,
 });
 
+// Configure Express to use GraphQL middleware
 app.use(
   '/graphql',
   graphqlHTTP({
@@ -111,6 +128,8 @@ app.use(
   })
 );
 
+// Define the server's port, using the provided port or a default
 const PORT = process.env.PORT || 4000;
 
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}/graphql`));
+// Start the server and log the server's URL to the console
+app.listen(PORT, () => console.log(`Server running on ${PORT}`));

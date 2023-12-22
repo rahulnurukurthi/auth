@@ -6,8 +6,8 @@ import { useNavigate } from "react-router-dom";
 import bgImg from '../assets/logo.svg';
 import '../styles/formStyles.css';
 import SpinnerComponent from '../components/spinnerComponent';
-import Home from './Home';
 
+// GraphQL mutation to handle user registration
 const REGISTER_MUTATION = gql`
   mutation Register($email: String!, $password: String!) {
     registerUser(email: $email, password: $password) {
@@ -22,13 +22,16 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
   const router = useNavigate();
 
   const [registerUser] = useMutation(REGISTER_MUTATION, {
+    // Callback executed when registration is successful
     onCompleted: (data) => {
       console.log('User registered successfully!', data);
       router("/home?registration=success");
     },
+    // Callback executed when registration encounters an error
     onError: (error) => {
       console.error('Registration error:', error.message);
       setError(`Registration failed. Email exists`);
@@ -36,6 +39,7 @@ const Register = () => {
     },
   });
 
+  // Function to handle the registration process
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
@@ -56,6 +60,7 @@ const Register = () => {
     }
   };
 
+  // Function to handle the redirection to the login page
   const onLoginClick = () => router("/login");
 
   return (
@@ -79,10 +84,12 @@ const Register = () => {
 
         {error && <div className="error-message">{error}</div>}
       </div>
+
       <div className="input-image">
         <img src={bgImg} alt="N/A" />
       </div>
 
+      {/* Display loading spinner while waiting for the registration process */}
       {loading && <SpinnerComponent />}
     </div>
   );
